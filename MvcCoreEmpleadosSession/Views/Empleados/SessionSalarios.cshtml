@@ -6,6 +6,10 @@
     asp-action="SumaSalarios">
     Suma salarial Session
 </a>
+<br/>
+<h1 style="color:blue">
+    @ViewData["MENSAJE"]
+</h1>
 
 <ul class="list-group">
     @foreach (Empleado emp in Model)
@@ -13,7 +17,8 @@
         <li class="list-group-item">
             @emp.Apellido
             <a asp-controller="Empleados"
-                asp-action="SessionSalarios">
+                asp-action="SessionSalarios"
+                asp-route-salario="@emp.Salario">
                 Almacenar salario
             </a>
         </li>
