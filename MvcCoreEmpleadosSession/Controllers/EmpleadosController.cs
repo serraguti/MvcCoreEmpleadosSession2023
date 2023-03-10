@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MvcCoreEmpleadosSession.Extensions;
 using MvcCoreEmpleadosSession.Models;
 using MvcCoreEmpleadosSession.Repositories;
@@ -8,14 +9,42 @@ namespace MvcCoreEmpleadosSession.Controllers
     public class EmpleadosController : Controller
     {
         private RepositoryEmpleados repo;
+        private IMemoryCache memoryCache;
 
-        public EmpleadosController(RepositoryEmpleados repo)
+        public EmpleadosController(RepositoryEmpleados repo
+            , IMemoryCache memoryCache)
         {
             this.repo = repo;
+            this.memoryCache = memoryCache;
         }
 
-        public IActionResult EmpleadosSessionOK(int? idempleado)
+        public IActionResult EmpleadosFavoritos()
         {
+            return View();
+        }
+
+        public IActionResult EmpleadosSessionOK(int? idempleado
+            , int? idfavorito)
+        {
+            if (idfavorito != null)
+            {
+                List<Empleado> empleadosFavoritos;
+                if (this.memoryCache.Get("FAVORITOS") == null)
+                {
+                    empleadosFavoritos = new List<Empleado>();
+                }
+                else
+                {
+                    empleadosFavoritos = this.memoryCache.Get<List<Empleado>>("FAVORITOS");
+                }
+                //BUSCAMOS AL EMPLEADO EN BBDD PARA ALMACENARLO EN CACHE
+                Empleado empleado = this.repo.FindEmpleado(idfavorito.Value);
+                empleadosFavoritos.Add(empleado);
+                //ALMACENAMOS LOS DATOS EN CACHE
+                this.memoryCache.Set("FAVORITOS", empleadosFavoritos);
+            }
+
+
             if (idempleado != null)
             {
                 List<int> idsEmpleado;

@@ -5,9 +5,9 @@ using MvcCoreEmpleadosSession.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddResponseCaching();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddMemoryCache();
-builder.Services.AddResponseCaching();
 
 builder.Services.AddSession(options =>
 {
