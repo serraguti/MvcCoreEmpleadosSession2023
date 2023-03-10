@@ -39,7 +39,7 @@ namespace MvcCoreEmpleadosSession.Controllers
             return View(empleados);
         }
 
-        public IActionResult EmpleadosAlmacenadosOK()
+        public IActionResult EmpleadosAlmacenadosOK(int? ideliminar)
         {
             //RECUPERAMOS LOS DATOS DE SESSION
             List<int> idsEmpleados =
@@ -53,6 +53,20 @@ namespace MvcCoreEmpleadosSession.Controllers
             }
             else
             {
+                if (ideliminar != null)
+                {
+                    //ELIMINAMOS EL ELEMENTO QUE NOS HAN SOLICITADO
+                    idsEmpleados.Remove(ideliminar.Value);
+                    if (idsEmpleados.Count == 0)
+                    {
+                        HttpContext.Session.Remove("IDSEMPLEADOS");
+                    }
+                    else
+                    {
+                        //DEBEMOS ACTUALIZAR DE NUEVO SESSION
+                        HttpContext.Session.SetObject("IDSEMPLEADOS", idsEmpleados);
+                    }
+                }
                 List<Empleado> empleadosSession =
                     this.repo.GetEmpleadosSession(idsEmpleados);
                 return View(empleadosSession);
